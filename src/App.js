@@ -1,5 +1,16 @@
 import React from "react";
 import "./styles.css";
+import Input from '@material-ui/core/Input';
+import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
 
 export default class App extends React.Component {
   constructor(props) {
@@ -110,43 +121,81 @@ export default class App extends React.Component {
       );
   }
 
+  handleChangePriority = (e,task_no) =>{
+    if(e.target.value){
+      fetch(
+        "https://todolist15.000webhostapp.com/updateTask.php?task_no="+task_no+"&task_priority="+e.target.value
+      )
+        .then((res) => res.json())
+        .then(
+          (result) => {
+            this.getTaskDetails();
+          },
+          (error) => {
+            this.setState({
+              isLoaded: true,
+              error
+            });
+          }
+        );
+    }
+
+  }
+
   render() {
     const { error, isLoaded, items } = this.state;
     return (
       <React.Fragment>
-        <div>To Do App</div><br/>
+        <div className="mainheading">To Do App</div>
         {!this.state.userLoggedIn ? (
-          <div>
-            <input type="text" onChange={(e) => this.handleChangeName(e)} />
-            <input type="password" onChange={(e) => this.handleChangePassword(e)} />
-            <button onClick={() => this.userLogin()}>Login</button>
+          <div className="loginContainer">
+            <Input placeholder="Enter Username" type="text" onChange={(e) => this.handleChangeName(e)} />
+            <Input placeholder="Enter Password" type="password" onChange={(e) => this.handleChangePassword(e)} />
+            <Button variant="contained" color="primary" onClick={() => this.userLogin()} >Login</Button>
           </div>
         ) : (
           <React.Fragment>
             <div className="App">
-              <input type="text" onChange={(e) => this.handleChange(e)} />
-              <button onClick={() => this.addTask()}>Add Task</button>
+              <Input placeholder="Enter Taskname" type="text" onChange={(e) => this.handleChange(e)} />
+              <Button variant="contained" color="secondary" onClick={() => this.addTask()}>Add Task</Button>
             </div>
-
+          
             <div>
               {error && <div>Error: {error.message}</div>}
               {!isLoaded && <div>Loading...</div>}
               {!error && isLoaded && (
-                <ul>
-                  <div className="heading">Task Name</div>
-                  {items.map((item) => (
-                    <li key={item.task_no}>
-                      {item.task_name}
-                      <div
-                        className="removeBtn"
-                        onClick={(task_no) => this.deleteTask(item.task_no)}
-                        title="delete"
-                      >
-                        x
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                <div className="tableBase">
+                  <TableContainer component={Paper}>
+                    <Table aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Sr No</TableCell>
+                          <TableCell align="right">Task Name</TableCell>
+                          <TableCell align="right">Priority</TableCell>
+                          <TableCell align="right">Delete</TableCell>
+                          
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {items.map((item,index) => (
+                          <TableRow key={index}>
+                            <TableCell component="th" scope="row">
+                              {index+1}
+                            </TableCell>
+                            <TableCell align="right">{item.task_name}</TableCell>
+                            <TableCell align="right">
+                              <input className="priority" type="number" value={item.task_priority} onChange={(e,task_no) => this.handleChangePriority(e, item.task_no)}/>
+                            </TableCell>
+                            <TableCell align="right">
+                              <DeleteIcon onClick={(task_no) => this.deleteTask(item.task_no)} />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+  
+                  </div>
               )}
             </div>
           </React.Fragment>
