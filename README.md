@@ -1,12 +1,12 @@
 # to-do
 
 Details about the project are as below -
-# Frontend 
+# Frontend (Created using React & Javascript)
 Fronted created and hosted on codesandbox
 Project URL - https://bmypo.csb.app/
 Frontend Github repo - https://github.com/siddhesh15/to-do
 
-# Backend 
+# Backend (Created using PHP & MySQL)
 APIs created for following Tasks -
 1) Get user details - https://todolist15.000webhostapp.com/userDetails.php
 2) Get task list - https://todolist15.000webhostapp.com/taskDetails.php
